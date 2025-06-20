@@ -1,11 +1,12 @@
 using Assets._Project.Scripts.PlayerLogic;
+using Assets._Project.Utilities;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Enemy
 {
-    public abstract class BaseEnemy : NetworkBehaviour
+    public abstract class BaseEnemy : ServerBehaviour
     {
         protected Transform _targetPlayerTransform;
 
@@ -22,7 +23,7 @@ namespace Assets._Project.Scripts.Enemy
 
         protected virtual void Update()
         {
-            if (!IsServer) return;
+            if (!IsActiveServerObject) return;
 
             WaitForTargetUpdate();
         }

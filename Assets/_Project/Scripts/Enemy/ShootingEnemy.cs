@@ -1,6 +1,3 @@
-using Assets._Project.Scripts.PlayerLogic;
-using System.Linq;
-using Unity.Netcode;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Enemy
@@ -16,7 +13,7 @@ namespace Assets._Project.Scripts.Enemy
 
         protected override void Update()
         {
-            if (!IsServer) return;
+            if (!IsActiveServerObject) return;
 
             WaitForTargetUpdate();
 

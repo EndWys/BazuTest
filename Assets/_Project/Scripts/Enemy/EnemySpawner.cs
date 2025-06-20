@@ -1,11 +1,15 @@
+using Assets._Project.Utilities;
 using Unity.Netcode;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Enemy
 {
-    public class EnemySpawner : NetworkBehaviour
+    public class EnemySpawner : ServerBehaviour
     {
-        [SerializeField] private NetworkObject _enemyPrefab;
+        [Header("Prefabs")]
+        [SerializeField] private BaseEnemy[] _enemyPrefabs;
+
+        [Header("Settings")]
         [SerializeField] private float _spawnInterval = 5f;
         [SerializeField] private float _spawnRadius = 10f;
 
@@ -13,7 +17,7 @@ namespace Assets._Project.Scripts.Enemy
 
         private void Update()
         {
-            if (!IsSpawned || !IsHost) return;
+            if (!IsActiveServerObject) return;
 
             _timer += Time.deltaTime;
             if (_timer >= _spawnInterval)
@@ -25,11 +29,20 @@ namespace Assets._Project.Scripts.Enemy
 
         private void SpawnEnemy()
         {
+            if (_enemyPrefabs == null || _enemyPrefabs.Length == 0)
+            {
+                Debug.LogWarning("EnemySpawner: No enemy prefabs assigned.");
+                return;
+            }
+
+            int index = Random.Range(0, _enemyPrefabs.Length);
+            BaseEnemy selectedPrefab = _enemyPrefabs[index];
+
             Vector3 randomPos = transform.position + Random.insideUnitSphere * _spawnRadius;
             randomPos.y = 0f;
 
-            NetworkObject enemy = Instantiate(_enemyPrefab, randomPos, Quaternion.identity);
-            enemy.Spawn();
+            BaseEnemy enemy = Instantiate(selectedPrefab, randomPos, Quaternion.identity);
+            enemy.NetworkObject.Spawn();
         }
     }
 }

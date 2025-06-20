@@ -1,10 +1,11 @@
 using Assets._Project.Scripts.PlayerLogic;
+using Assets._Project.Utilities;
 using Unity.Netcode;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Enemy
 {
-    public class Projectile : NetworkBehaviour
+    public class Projectile : ServerBehaviour
     {
         [SerializeField] private float _speed = 10f;
         [SerializeField] private float _lifeTime = 5f;
@@ -13,8 +14,6 @@ namespace Assets._Project.Scripts.Enemy
         private Vector3 _direction;
         private float _timer;
 
-        private bool _isValid => IsServer && IsSpawned;
-
         public void Init(Vector3 dir)
         {
             _direction = dir.normalized;
@@ -22,7 +21,7 @@ namespace Assets._Project.Scripts.Enemy
 
         private void Update()
         {
-            if (!_isValid) return;
+            if (!IsActiveServerObject) return;
 
             transform.position += _direction * _speed * Time.deltaTime;
 
@@ -35,7 +34,7 @@ namespace Assets._Project.Scripts.Enemy
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!_isValid) return;
+            if (!IsActiveServerObject) return;
 
             if (other.TryGetComponent(out PlayerHealth health))
             {
