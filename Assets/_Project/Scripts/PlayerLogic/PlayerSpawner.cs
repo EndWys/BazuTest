@@ -1,35 +1,50 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerSpawner : NetworkBehaviour
+namespace Assets._Project.Scripts.PlayerLogic
 {
-    [SerializeField] private NetworkObject _playerPrefab;
-
-    public override void OnNetworkSpawn()
+    public class PlayerSpawner : NetworkBehaviour
     {
-        if (IsServer)
+        [SerializeField] private NetworkObject _playerPrefab;
+
+        private IActivePlayerHolder _playerProvider;
+
+        public override void OnNetworkSpawn()
         {
-            NetworkManager.OnClientConnectedCallback += OnClientConnected;
+            if (IsServer)
+            {
+                _playerProvider = new ActivePlayersProvider();
+
+                NetworkManager.OnClientConnectedCallback += OnClientConnected;
+                NetworkManager.OnClientDisconnectCallback += OnClientConnected;
+            }
         }
-    }
 
-    private void OnClientConnected(ulong clientId)
-    {
-        NetworkObject playerInstance = Instantiate(_playerPrefab, GetSpawnPosition(), Quaternion.identity);
-
-        playerInstance.SpawnAsPlayerObject(clientId);
-    }
-
-    private Vector3 GetSpawnPosition()
-    {
-        return new Vector3(Random.Range(-10, 10), 0, Random.Range(-10, 10));
-    }
-
-    public override void OnNetworkDespawn()
-    {
-        if (IsServer)
+        private void OnClientConnected(ulong clientId)
         {
-            NetworkManager.OnClientConnectedCallback -= OnClientConnected;
+            NetworkObject playerInstance = Instantiate(_playerPrefab, GetSpawnPosition(), Quaternion.identity);
+            playerInstance.SpawnAsPlayerObject(clientId);
+
+            _playerProvider.AddPlayer(playerInstance);
+        }
+
+        private void OnClientDisconnected(ulong clientId)
+        {
+            _playerProvider.RemovePlayer(clientId);
+        }
+
+        private Vector3 GetSpawnPosition()
+        {
+            return new Vector3(Random.Range(-10, 10), 0, Random.Range(-10, 10));
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            if (IsServer)
+            {
+                NetworkManager.OnClientConnectedCallback -= OnClientConnected;
+                NetworkManager.OnClientDisconnectCallback -= OnClientConnected;
+            }
         }
     }
 }
