@@ -1,33 +1,36 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class SimpleNetworkUI : MonoBehaviour
+namespace Assets._Project.Scripts.UI
 {
-    private void OnGUI()
+    public class SimpleNetworkUI : MonoBehaviour
     {
-        int width = 200;
-        int height = 50;
-        int spacing = 10;
-        int x = 10;
-        int y = 10;
-
-        if (!NetworkManager.Singleton.IsHost && !NetworkManager.Singleton.IsClient)
+        private void OnGUI()
         {
-            if (GUI.Button(new Rect(x, y, width, height), "Host"))
-            {
-                NetworkManager.Singleton.StartHost();
-            }
+            int width = 200;
+            int height = 50;
+            int spacing = 10;
+            int x = 10;
+            int y = 10;
 
-            if (GUI.Button(new Rect(x, y + height + spacing, width, height), "Client"))
+            if (!NetworkManager.Singleton.IsHost && !NetworkManager.Singleton.IsClient)
             {
-                NetworkManager.Singleton.StartClient();
+                if (GUI.Button(new Rect(x, y, width, height), "Host"))
+                {
+                    NetworkManager.Singleton.StartHost();
+                }
+
+                if (GUI.Button(new Rect(x, y + height + spacing, width, height), "Client"))
+                {
+                    NetworkManager.Singleton.StartClient();
+                }
             }
-        }
-        else
-        {
-            if (GUI.Button(new Rect(x, y, width, height), "Shutdown"))
+            else
             {
-                NetworkManager.Singleton.Shutdown();
+                if (GUI.Button(new Rect(x, y, width, height), "Shutdown"))
+                {
+                    NetworkManager.Singleton.Shutdown();
+                }
             }
         }
     }
