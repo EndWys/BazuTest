@@ -16,7 +16,7 @@ namespace Assets._Project.Scripts.PlayerLogic
                 _playerProvider = new ActivePlayersProvider();
 
                 NetworkManager.OnClientConnectedCallback += OnClientConnected;
-                NetworkManager.OnClientDisconnectCallback += OnClientConnected;
+                NetworkManager.OnClientDisconnectCallback += OnClientDisconnected;
             }
         }
 
