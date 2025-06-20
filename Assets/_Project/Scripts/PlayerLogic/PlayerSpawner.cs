@@ -43,7 +43,7 @@ namespace Assets._Project.Scripts.PlayerLogic
             if (IsServer)
             {
                 NetworkManager.OnClientConnectedCallback -= OnClientConnected;
-                NetworkManager.OnClientDisconnectCallback -= OnClientConnected;
+                NetworkManager.OnClientDisconnectCallback -= OnClientDisconnected;
             }
         }
     }
