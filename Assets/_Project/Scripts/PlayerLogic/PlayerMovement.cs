@@ -2,33 +2,36 @@ using Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
-public class PlayerMovement : NetworkBehaviour
+namespace Assets._Project.Scripts.PlayerLogic
 {
-    [SerializeField] private float _moveSpeed = 5f;
-
-    private CharacterController _controller;
-
-    public override void OnNetworkSpawn()
+    [RequireComponent(typeof(CharacterController))]
+    public class PlayerMovement : NetworkBehaviour
     {
-        _controller = GetComponent<CharacterController>();
+        [SerializeField] private float _moveSpeed = 5f;
 
-        if (IsOwner)
+        private CharacterController _controller;
+
+        public override void OnNetworkSpawn()
         {
-            var vCam = FindObjectOfType<CinemachineVirtualCamera>();
-            if (vCam != null)
+            _controller = GetComponent<CharacterController>();
+
+            if (IsOwner)
             {
-                vCam.Follow = transform;
-                vCam.LookAt = transform;
+                var vCam = FindObjectOfType<CinemachineVirtualCamera>();
+                if (vCam != null)
+                {
+                    vCam.Follow = transform;
+                    vCam.LookAt = transform;
+                }
             }
         }
-    }
 
-    private void Update()
-    {
-        if (!IsOwner) return;
+        private void Update()
+        {
+            if (!IsOwner) return;
 
-        Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-        _controller.SimpleMove(move * _moveSpeed);
+            Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
+            _controller.SimpleMove(move * _moveSpeed);
+        }
     }
 }
